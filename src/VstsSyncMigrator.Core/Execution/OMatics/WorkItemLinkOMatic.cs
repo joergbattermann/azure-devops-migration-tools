@@ -3,13 +3,14 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using VstsSyncMigrator.Engine;
+using VstsSyncMigrator.Engine.Configuration.Processing;
 using VstsSyncMigrator.Engine.Execution.Exceptions;
 
 namespace VstsSyncMigrator.Core.Execution.OMatics
 {
     public class WorkItemLinkOMatic
     {
-        public void MigrateLinks(WorkItem sourceWorkItemLinkStart, WorkItemStoreContext sourceWorkItemStore, WorkItem targetWorkItemLinkStart, WorkItemStoreContext targetWorkItemStore, bool save = true)
+        public void MigrateLinks(WorkItem sourceWorkItemLinkStart, WorkItemStoreContext sourceWorkItemStore, WorkItem targetWorkItemLinkStart, WorkItemStoreContext targetWorkItemStore, WorkItemMigrationConfig workItemMigrationConfig, bool save = true)
         {
             if (targetWorkItemLinkStart.Links.Count == sourceWorkItemLinkStart.Links.Count)
             {
@@ -69,12 +70,12 @@ namespace VstsSyncMigrator.Core.Execution.OMatics
             }
             if (sourceWorkItemLinkStart.Type.Name == "Test Case")
             {
-                MigrateSharedSteps(sourceWorkItemLinkStart, targetWorkItemLinkStart, sourceWorkItemStore, targetWorkItemStore, save);
+                MigrateSharedSteps(sourceWorkItemLinkStart, targetWorkItemLinkStart, sourceWorkItemStore, targetWorkItemStore, workItemMigrationConfig, save);
             }
         }
 
         private void MigrateSharedSteps(WorkItem wiSourceL, WorkItem wiTargetL, WorkItemStoreContext sourceStore,
-            WorkItemStoreContext targetStore, bool save)
+            WorkItemStoreContext targetStore, WorkItemMigrationConfig workItemMigrationConfig, bool save)
         {
             const string microsoftVstsTcmSteps = "Microsoft.VSTS.TCM.Steps";
             var oldSteps = wiTargetL.Fields[microsoftVstsTcmSteps].Value.ToString();
@@ -100,7 +101,6 @@ namespace VstsSyncMigrator.Core.Execution.OMatics
 
             if (wiTargetL.IsDirty && save)
             {
-                wiTargetL.Fields["System.ChangedBy"].Value = "Migration";
                 wiTargetL.Save();
             }
         }
@@ -119,7 +119,6 @@ namespace VstsSyncMigrator.Core.Execution.OMatics
                 target.Links.Add(el);
                 if (save)
                 {
-                    target.Fields["System.ChangedBy"].Value = "Migration";
                     target.Save();
                 }
             }
@@ -200,7 +199,6 @@ namespace VstsSyncMigrator.Core.Execution.OMatics
                         wiTargetL.Links.Add(newRl);
                         if (save)
                         {
-                            wiTargetL.Fields["System.ChangedBy"].Value = "Migration";
                             wiTargetL.Save();
                         }
                         Trace.WriteLine(
@@ -275,7 +273,6 @@ namespace VstsSyncMigrator.Core.Execution.OMatics
                 target.Links.Add(hl);
                 if (save)
                 {
-                    target.Fields["System.ChangedBy"].Value = "Migration";
                     target.Save();
                 }                
             }

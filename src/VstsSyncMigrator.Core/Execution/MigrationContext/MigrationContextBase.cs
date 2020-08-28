@@ -82,10 +82,6 @@ namespace VstsSyncMigrator.Engine
 
         internal static void SaveWorkItem(WorkItem workItem, bool updateChangedByToMigration = true)
         {
-            if (updateChangedByToMigration)
-            {
-                workItem.Fields["System.ChangedBy"].Value = "Migration";
-            }
             workItem.Save();
         }
 

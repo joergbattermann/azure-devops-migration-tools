@@ -32,7 +32,8 @@ namespace VstsSyncMigrator.Engine
         {
             //if (enableTrace) { Trace.Listeners.Add(new ApplicationInsightsTraceListener(applicationInsightsKey)); }
             TelemetryConfiguration.Active.InstrumentationKey = applicationInsightsKey;
-            telemetryClient = new TelemetryClient();
+            TelemetryConfiguration.Active.DisableTelemetry = true;
+            telemetryClient = new TelemetryClient(TelemetryConfiguration.Active);
 
 
             telemetryClient.InstrumentationKey = applicationInsightsKey;
