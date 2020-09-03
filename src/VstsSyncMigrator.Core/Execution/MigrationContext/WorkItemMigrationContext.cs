@@ -48,8 +48,7 @@ namespace VstsSyncMigrator.Engine
             _config = config;
             PopulateIgnoreList();
 
-            VssClientCredentials adoCreds = new VssClientCredentials();
-            _witClient = new WorkItemTrackingHttpClient(me.Target.Collection.Uri, adoCreds);
+            _witClient = new WorkItemTrackingHttpClient(me.Target.Collection.Uri, me.TargetCredentials ?? new VssClientCredentials());
 
             var workItemServer = me.Source.Collection.GetService<WorkItemServer>();
             attachmentOMatic = new AttachmentOMatic(workItemServer, config.AttachmentWorkingPath, config.AttachmentMazSize);

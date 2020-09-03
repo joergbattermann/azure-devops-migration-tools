@@ -18,10 +18,10 @@ namespace VstsSyncMigrator.Engine
         Dictionary<string, List<IFieldMap>> fieldMapps = new Dictionary<string, List<IFieldMap>>();
         Dictionary<string, IWitdMapper> workItemTypeDefinitions = new Dictionary<string, IWitdMapper>();
         Dictionary<string, string> gitRepoMapping = new Dictionary<string, string>();
-        ITeamProjectContext source;
-        ITeamProjectContext target;
-        VssCredentials sourceCreds;
-        VssCredentials targetCreds;
+        internal ITeamProjectContext source;
+        internal ITeamProjectContext target;
+        internal VssCredentials SourceCredentials { get; }
+        internal VssCredentials TargetCredentials { get; }
         public readonly Dictionary<int, string> ChangeSetMapping = new Dictionary<int, string>();
 
         public MigrationEngine()
@@ -35,28 +35,28 @@ namespace VstsSyncMigrator.Engine
 
         public MigrationEngine(EngineConfiguration config, VssCredentials sourceCredentials, VssCredentials targetCredentials)
         {
-            sourceCreds = sourceCredentials;
-            targetCreds = targetCredentials;
+            SourceCredentials = sourceCredentials;
+            TargetCredentials = targetCredentials;
 
             ProcessConfiguration(config);
         }
 
         private void ProcessConfiguration(EngineConfiguration config)
         {
-            Telemetry.EnableTrace = config.TelemetryEnableTrace;
+            Telemetry.EnableTrace = false;
             if (config.Source != null)
             {
-                if (sourceCreds == null)
+                if (SourceCredentials == null)
                     SetSource(new TeamProjectContext(config.Source));
                 else
-                    SetSource(new TeamProjectContext(config.Source, sourceCreds));
+                    SetSource(new TeamProjectContext(config.Source, SourceCredentials));
             }
             if (config.Target != null)
             {
-                if (targetCreds == null)
+                if (TargetCredentials == null)
                     SetTarget(new TeamProjectContext(config.Target));
                 else
-                    SetTarget(new TeamProjectContext(config.Target, targetCreds));
+                    SetTarget(new TeamProjectContext(config.Target, TargetCredentials));
             }           
             if (config.FieldMaps != null)
             {
